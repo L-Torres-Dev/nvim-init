@@ -1,3 +1,4 @@
+local popup = require("plenary.popup")
 -- 1. Save wd list file to root config directory (can only save up to 3)
 function addWD()
     local wd = vim.fn.getcwd() .. "\\"
@@ -62,6 +63,37 @@ function addWD()
     end
 end
 
+local function create_window()
+    --log.trace("_create_window()")
+    --local config = harpoon.get_menu_config()
+    local width = 60
+    local height = 10
+    local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
+    local bufnr = vim.api.nvim_create_buf(false, false)
+
+    local Harpoon_win_id, win = popup.create(bufnr, {
+        title = "WD Manager",
+        highlight = "HarpoonWindow",
+        line = math.floor(((vim.o.lines - height) / 2) - 1),
+        col = math.floor((vim.o.columns - width) / 2),
+        minwidth = width,
+        minheight = height,
+        borderchars = borderchars,
+    })
+
+    return {
+        bufnr = bufnr,
+        win_id = wd_man_win_id,
+    }
+end
+
+function openWDs()
+
+    local win_info = create_window()
+    print(win_info)
+
+end
+
 function checkDirectories()
     local wd = vim.fn.getcwd() .. "\\"
     local config_path = vim.fn.stdpath('config')
@@ -88,4 +120,5 @@ end
 -- 2. Open Window that displays working directorys
 
 vim.api.nvim_create_user_command('Addwd', addWD, {})
+vim.api.nvim_create_user_command('Openwds', openWDs, {})
 vim.api.nvim_create_user_command('CheckPaths', checkDirectories, {})
