@@ -4,25 +4,39 @@ function addWD()
     local config_path = vim.fn.stdpath('config')
 
     local fileName = "wdRepo.txt"
-    local filePath = vim.fs.joinpath(wd, fileName)
-    local wdRepo = io.open(filePath, "w")
+    local filePath = vim.fs.joinpath(config_path, fileName)
+    local wdRepo = io.open(filePath, "a")
     print(filePath)
     if wdRepo then
         print('adding new working directory')
-
         local lines = io.lines(filePath)
-       
         local lines_list = {}
+
         for line in lines do
             table.insert(lines_list, line)
+            print("Adding line to table: " .. line)
         end
 
-        if lines_list ~= nil then
+        if lines_list ~= nil and #lines_list > 0 then
             print("lines found! Checking to append or replace oldest")
             print("line count: " .. #lines_list)
             
             if #lines_list >= 3 then
                 print("too many working directories, replacing oldest") 
+                wdRepo:close()
+                wdRepo = io.open(filePath, "w")
+                
+                lines_list[1] = wd
+
+                print("first, replacing oldest working directory:")
+                for index, value in ipairs(lines_list) do
+                    print(value)
+                end
+                
+                local newContent = table.concat(lines_list, "\n")
+
+                wdRepo:write(newContent)
+                wdRepo:close()
             else
                 wdRepo:close()
                 wdRepo = io.open(filePath, "a")
@@ -30,13 +44,12 @@ function addWD()
                 wdRepo:write(wd)
                 wdRepo:close()
                 print(wd .. " written to: " .. config_path)
-
             end
 
 
         else
                 print("Lines not found. Adding first working directory")
-                wdRepo.close()
+                wdRepo:close()
                 wdRepo = io.open(filePath, "a")
                 wdRepo:write(wd)
                 wdRepo:close()
@@ -49,6 +62,30 @@ function addWD()
     end
 end
 
+function checkDirectories()
+    local wd = vim.fn.getcwd() .. "\\"
+    local config_path = vim.fn.stdpath('config')
+    local fileName = "wdRepo.txt"
+    local filePath = vim.fs.joinpath(config_path, fileName)
+
+    print("working directory: " .. wd)
+    print("config path: " .. config_path)
+
+    print("")
+    print("Printing working directories")
+
+    local lines = io.lines(filePath)
+    local i = 0
+    for line in lines do
+        print(line)
+        i = i + 1  
+        if i > 3 then
+            break
+        end 
+    end
+end
+
 -- 2. Open Window that displays working directorys
 
 vim.api.nvim_create_user_command('Addwd', addWD, {})
+vim.api.nvim_create_user_command('CheckPaths', checkDirectories, {})
