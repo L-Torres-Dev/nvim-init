@@ -117,7 +117,6 @@ function M.openWDs()
     wd_man_wind_id = win_info.win_id
     buffer = win_info.bufnr
 
-    print("window id: " .. wd_man_wind_id)
     local dirs = getDirectories()
     
     vim.api.nvim_buf_set_lines(buffer, 0, 3, false, dirs)
@@ -146,8 +145,26 @@ function M.openWDs()
 end
 
 function M.select_directory()
-    local index = vim.fn.line(".")
-    print("dir index: " .. index)
+    local index = vim.fn.line(".")-1
+    local line_text = vim.api.nvim_buf_get_lines(buffer, index, index + 1, false)[1]
+    
+    M.closeWDs()
+    if line_text and line_text ~= "" then
+        line_text = line_text:gsub("%s+$", "")
+
+        if line_text:sub(-1) == "\\" then
+            line_text = line_text:sub(1, -2)
+        end
+        
+        vim.api.nvim_set_current_dir(line_text)
+
+        vim.cmd("edit " .. line_text)
+        
+        
+    else
+        print("Error: Line text was empty.")
+    end
+
 end
 
 function M.checkDirectories()
