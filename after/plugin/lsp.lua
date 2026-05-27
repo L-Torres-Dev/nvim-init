@@ -52,6 +52,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
 		vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
 		vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+		vim.keymap.set("i", "<C-space>", function() vim.lsp.completion.get() end, opts)
     end,
 
 })

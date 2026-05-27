@@ -1,7 +1,2 @@
-local get_os = require("Lentor.getOS")
-os = get_os.get_os()
-if os == "Windows" then
-    vim.g.undotree_DiffCommand = "FC"
-    print("Undo Tree: Windows") 
-end
+vim.g.undotree_DiffCommand = "FC" -- strictly for windows. Remove if using linux
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
